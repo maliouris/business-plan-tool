@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-
+    <script src="https://unpkg.com/vue@2.5.13/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 
 <body>
@@ -150,21 +151,25 @@
                             <p>5. Αναλυτική περιγραφή λαθών για να μην επαναληφθούν στο μέλλον.</p>
     				</div>
                 </div>
-
+            <div id= "root">
             <form class="strategy_form">
                 <label>1. Ποιά κανάλια προβολής θα χρησιμοποιήσετε για την προώθηση του προϊόντος/υπηρεσίας σας;<br>
-                    <input type="text" name="kanalia_probolis" placeholder="ΚΑΝΑΛΙΑ ΠΡΟΒΟΛΗΣ"></label><br><br>
+                    <input type="text" name="kanalia_probolis" placeholder="ΚΑΝΑΛΙΑ ΠΡΟΒΟΛΗΣ" v-model="mypromotion"></label><br><br>
                 <label>2. Ποιά κανάλια διανομής θα προτιμήσετε για το προϊόν/υπηρεσία σας;<br>
-                    <input type="text" name="kanalia_dianomis" placeholder="ΚΑΝΑΛΙΑ ΔΙΑΝΟΜΗΣ"></label><br><br>
+                    <input type="text" name="kanalia_dianomis" placeholder="ΚΑΝΑΛΙΑ ΔΙΑΝΟΜΗΣ" v-model="mycontribution"></label><br><br>
                 <label>3. Ποιές τεχνικές για την εισαγωγή του προϊόντος/υπηρεσίας σας στην αγορά θα ακολουθήσετε;<br>
-                    <input type="text" name="texnikes_eisagogis" placeholder="ΤΕΧΙΚΕΣ ΕΙΣΑΓΩΓΗΣ ΣΤΗΝ ΑΓΟΡΑ"></label><br><br>
+                    <input type="text" name="texnikes_eisagogis" placeholder="ΤΕΧΙΚΕΣ ΕΙΣΑΓΩΓΗΣ ΣΤΗΝ ΑΓΟΡΑ" v-model="mymarketEntry"></label><br><br>
                 <label>4. Ποιός θα είναι ο σχεδιασμός των δημοσίων σχέσεων που θα ακολουθήσετε;<br>
-                    <input type="text" name="dimosies_sxeseis" placeholder="ΔΗΜΟΣΙΕΣ ΣΧΕΣΕΙΣ"></label><br><br>
+                    <input type="text" name="dimosies_sxeseis" placeholder="ΔΗΜΟΣΙΕΣ ΣΧΕΣΕΙΣ" v-model="mypublicRelations"></label><br><br>
                 <label>5. Κινήσεις προς αποφυγή και Λάθη του παρελθόντος:<br>
-                    <input type="text" name="kiniseis_apofugi" placeholder="ΚΙΝΗΣΕΙΣ ΠΡΟΣ ΑΠΟΦΥΓΗ/ΛΑΘΗ"></label><br>
+                    <input type="text" name="kiniseis_apofugi" placeholder="ΚΙΝΗΣΕΙΣ ΠΡΟΣ ΑΠΟΦΥΓΗ/ΛΑΘΗ" v-model="myavoid"></label><br>
+
+                    <button v-on:click="saveData">Submit</button>
             </form>
+          </div>
         </main>
     </div>
+
 
 
     <footer class="foot">
@@ -184,15 +189,47 @@
             if (x.style.display === "none") {
                 x.style.display = "block";
                 w.style.backgroundColor ='#12492a';
-
-
             } else {
                 x.style.display = "none";
                 w.style.backgroundColor ='#299858';
-
             }
         }
-        </script>
+</script>
+<script>
+        new Vue({
+          el: '#root',
+          data: {
+            mypromotion: '',
+            mycontribution: '',
+            mymarketEntry: '',
+            mypublicRelations: '',
+            myavoid: ''
+          },
+
+          methods: {
+            saveData(){
+
+
+              axios.post(`http://jsonplaceholder.typicode.com/posts`,{
+                                    Promotion: this.mypromotion,
+                                    Contribution: this.mycontribution,
+                                    MarketEntry: this.mymarketEntry,
+                                    PublicRelations: this.mypublicRelations,
+                                    Avoid: this.myavoid })
+                          .then(function (response) {
+                              console.log(response);
+                          })
+                          .catch(function (error) {
+                              console.log(error);
+                            });
+              },
+
+          test(){
+            alert("Works");
+          },
+        }
+        })
+</script>
 
 </body>
 

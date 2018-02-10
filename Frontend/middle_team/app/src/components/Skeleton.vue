@@ -3,11 +3,11 @@
 
     <header class="head">
         <div class="head__logo">
-            <img src="../assets/logo.png" alt="Logo">
+            <!--<img src="../assets/logo.png" alt="Logo">-->
         </div>
         <div class="head__export">
             <i class="fa fa-cloud-download fa-2x" aria-hidden="true"></i>
-            <p>Export</p>
+            <button @click="exportFunction()">Export</button>
         </div>
         <img class="head__avatar" src="../assets/elvis.jpg" alt="Avatar">
     </header>
@@ -24,6 +24,14 @@
                         </router-link>
                         <router-link to="/2b-description" tag="li" class="">
                           <a>ΠΕΡΙΓΡΑΦΗ</a>
+                        </router-link>
+                      </ul>
+                    </li>
+                    <li>
+                      <a href="">ΑΝΑΛΥΣΗ ΑΓΟΡΑΣ</a>
+                      <ul>
+                        <router-link to="/market-general" tag="li" class="">
+                          <a>Γενικές</a>
                         </router-link>
                       </ul>
                     </li>
@@ -153,12 +161,61 @@
 </template>
 
 <script>
+
+import pdfMake from "pdfmake/build/pdfmake"
+import pdfFonts from "pdfmake/build/vfs_fonts"
+pdfMake.vfs = pdfFonts.pdfMake.vfs
+
 export default {
-  name: 'Skeleton',
+ 	name: 'Skeleton',
   data () {
     return {
       msg: 'Welcome to Your Vue.js App'
     }
+  },
+  methods: {
+  	// This function returns a parsed date from the db form(YYYYMMDD) into proper form with slashes(DD/MM/YYYY)
+  	dateParser(date){
+  		return String(date).slice(6) + "/" 
+	 			+ String(date).slice(4, 6) + "/"
+	 			+ String(date).slice(0, 4)
+  	},
+    exportFunction(){
+    	var db = this.$store.state
+			// PDFMake code here
+			var docDefinition = {
+				// Content of the pdf document
+				content: [
+					// Section 1
+					{text: "Επιχειρηματικό Μοντέλο", style: "sectionHeader"},
+					" ",
+					// Subsection 1.1
+					// This content element is a complicated one, with extra "tags" like bold, underline, etc., all contained into the style. 
+					// Notice it is inside curly brackets.
+					{text: "1.1 Ταυτότητα Επιχείρησης:", style: "subSectionHeader"},
+					" ", // Newline
+					// This content element is a simple string element, no need for curly brackets, just comma after it.
+					"Όνομα επιχείρησης: " 		 + db.identity[0].Name,
+					"Ημερομηνία δημιουργίας: " + this.dateParser(db.identity[0].Date),
+					"Νομική μορφή: " 		       + db.identity[0].LegalForm,
+					"Τύπος επιχείρησης: "      + db.identity[0].OrderOfBusiness
+					
+				], // Content array end
+
+				styles: {
+				    sectionHeader: {
+				      bold: true, underline: true, fontSize: 20, alignment: "left", decoration:"underline"
+				    },
+				    subSectionHeader: {
+				      bold: true, underline: true, fontSize: 15, alignment: "left", decoration:"underline"
+				    }
+				  }
+
+			} // docDefinition end
+			
+			// Download the PDF, named after the business name given in section 1.1
+			pdfMake.createPdf(docDefinition).download(db.identity[0].Name + "BusinessPlan.pdf");
+    } // ExportFun end		
   }
 }
 </script>
