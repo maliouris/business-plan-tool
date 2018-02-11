@@ -180,6 +180,49 @@ export default {
 	 			+ String(date).slice(4, 6) + "/"
 	 			+ String(date).slice(0, 4)
   	},
+					fourProductsFun(db) {
+						var charListArray = []
+						var charListArrayObj=db["products"]
+						for (var i = 0; i < charListArrayObj.length; i++) {
+							if(db.products[i].ProductType){
+								var productType="Προϊόν: "
+							}
+							else{
+								var productType="Υπηρεσία: "
+							}
+							charListArray.push([{text: productType + charListArrayObj[i].Name},
+											{text: "Απευθυνόμενο σε: " + charListArrayObj[i].Directed_to},
+											{text: "Σχέδιο Καινοτομίας: " + charListArrayObj[i].Innovation_factor},
+											{text: "Τεχνολογία: " + charListArrayObj[i].Technology},
+											{text: "Απαιτήσεις Άδειας: " + charListArrayObj[i].Certificate},
+											{text: "Άδεια: " + charListArrayObj[i].License},
+											{text:"Ανταγωνισμός: " + charListArrayObj[i].Competition},
+											{text: "Τελική Τιμή: " + charListArrayObj[i].Price + "€"},
+											{text: "Περιγραφή: " + charListArrayObj[i].Description}, " "])
+						}
+						return charListArray
+					},
+					fiveTwoPestelFun(db) {
+						var factorsArray = []
+						var factorsArrayObj = db["factors"]
+						for (var i = 0; i < factorsArrayObj.length; i++){
+							factorsArray.push([{text: "Περιγραφή: " + factorsArrayObj[i].Description},
+										{text: "Παράδειγμα: " + factorsArrayObj[i].Example}, " "])
+						}
+						return factorsArray	
+					},
+					sixTwoMarketingFun(db) {
+						var marketingActionsArray = []
+						var marketingActionsArrayObj = db["marketingActions"]
+						for (var i = 0; i < marketingActionsArrayObj.length; i++){
+							marketingActionsArray.push([{text: "Ενέργεια: " + marketingActionsArrayObj[i].Title},
+											{text: "Χρόνος Υλοποίησης: " + marketingActionsArrayObj[i].ImplementationTime},
+											{text: "Συχνότητα: " + marketingActionsArrayObj[i].Frequency},
+											{text: "Κόστος Υλοποίησης: " + marketingActionsArrayObj[i].ImplementationCost},
+											{text: "Συνολικό Κόστος: " + marketingActionsArrayObj[i].TotalCost}, " "])
+						}
+						return marketingActionsArray	
+					},
     exportFunction(){
     	var db = this.$store.state
 			// PDFMake code here
@@ -198,7 +241,89 @@ export default {
 					"Όνομα επιχείρησης: " 		 + db.identity[0].Name,
 					"Ημερομηνία δημιουργίας: " + this.dateParser(db.identity[0].Date),
 					"Νομική μορφή: " 		       + db.identity[0].LegalForm,
-					"Τύπος επιχείρησης: "      + db.identity[0].OrderOfBusiness
+					"Τύπος επιχείρησης: "      + db.identity[0].OrderOfBusiness,
+					" ",
+					// Section 4
+					{text: "Προϊόντα - Υπηρεσίες", style: "sectionHeader"},
+					" ",
+					{ol: this.fourProductsFun(db)},
+					" "," ",
+					// Section 5
+					{text: "Ανάλυση Αγοράς", style: "sectionHeader", pageBreak: "before"},
+					" ",
+					// Section 5.1
+					{text: "5.1 Ανάλυση SWOT:", style: "subSectionHeader"},
+					" ",
+					{columns: [
+						{
+							width: '50%',
+							stack: [
+								"Δυνατά: ",
+								{
+									ul: db["swot"][0].Strong
+								}
+							]
+						},
+						{
+							width: '50%',
+							stack: [
+								"Αδύναμα: ",
+								{
+									ul: db["swot"][0].Weak
+								}
+							]
+						},
+					]},
+					" ",
+					{columns: [
+						{
+							width: '50%',
+							stack: [
+								"Ευκαιρίες: ",
+								{
+									ul: db["swot"][0].Opportunities
+								}
+							]
+						},
+						{
+							width: '50%',
+							stack: [
+								"Απειλές: ",
+								{
+									ul: db["swot"][0].Threats
+								}
+							]
+						}
+					]},
+					" ",
+
+					// Section 5.2
+					{text: "5.2 Ανάλυση PESTEL:", style: "subSectionHeader"},
+					" ",
+					{ol: this.fiveTwoPestelFun(db)},
+	 				" "," ",
+					// Section 5.3
+					{text: "5.3 Γενικές Παρατηρήσεις:", style: "subSectionHeader"},
+					" ",
+					{text: db["note"][0].Text},
+	 				" "," ",
+					// Section 6
+					{text: "Στρατηγική Marketing", style: "sectionHeader"},
+					" ",
+					// Section 6.1	
+					{text: "6.1 Στρατηγική:", style: "subSectionHeader"},
+					" ",
+					"Κανάλια Προβολής: " 			  + db["strategy"][0].Promotion,
+					"Κανάλια Διανομής: " 			  + db["strategy"][0].Contribution,
+					"Τεχνικές Εισαγωγής στην Αγορά: " + db["strategy"][0].MarketEntry,
+					"Δημόσιες Σχέσεις: "              + db["strategy"][0].PublicRelations,
+					"Κινήσεις προς Αποφυγείν: "       + db["strategy"][0].Avoid,
+	 				" "," ",
+					// Section 6.2
+					{text: "6.2 Ενέργειες Marketing:", style: "subSectionHeader"},
+					" ", 
+					{ol: this.sixTwoMarketingFun(db)},
+	 				" "," ", 
 					
 				], // Content array end
 
